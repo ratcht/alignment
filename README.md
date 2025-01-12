@@ -14,7 +14,7 @@ This project repository contains my research and implementations exploring vario
 - So far, I have built a basic CNN to classify the images of the CIFAR10 dataset.
 - My goal is to experiment with the base model. I hope to build a tool that can visualize the "lighting up" of different neural network connections given an input.
 
-## Getting Started
+## Installation
 
 1. Clone this repository:
    ```bash
