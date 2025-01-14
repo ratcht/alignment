@@ -6,70 +6,132 @@ interface Message {
   isComplete: boolean;
 }
 
+interface MessageGroup {
+  id: number;
+  messages: Message[];
+}
+
 export function useStreamHandler() {
   const eventSourceRef = useRef<EventSource | null>(null);
+  const currentRoundRef = useRef<number | null>(null);
+  const currentMessageRef = useRef<number | null>(null);
 
   const startStream = async (
     input: string,
-    updateMessages: (updater: (messages: Message[]) => Message[]) => void,
+    updateDebates: (updater: (rounds: MessageGroup[]) => MessageGroup[]) => void,
     setCurrentStreamId: (id: number | null) => void
   ) => {
     try {
-      const response = await fetch('http://localhost:8000/start-stream', {
+      const response = await fetch('http://localhost:8000/start-debate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ prompt: input }),
       });
 
       if (!response.ok) throw new Error('Failed to start stream');
 
-      const { stream_id } = await response.json();
+      const { debate_id } = await response.json();
 
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
 
-      const eventSource = new EventSource(`http://localhost:8000/stream/${stream_id}`);
+      const eventSource = new EventSource(`http://localhost:8000/stream/${debate_id}`);
       eventSourceRef.current = eventSource;
-
-      let currentMessageId: number | null = null;
 
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
           
           switch (data.type) {
-            case 'message_start':
-              currentMessageId = Date.now();
-              updateMessages(prev => [...prev, {
-                id: currentMessageId!,
-                response: '',
-                isComplete: false
+            case 'start_debate':
+              // Initialize the debate
+              break;
+
+            case 'round_start':
+              // Start a new round
+              currentRoundRef.current = Date.now();
+              updateDebates(prev => [...prev, {
+                id: currentRoundRef.current!,
+                messages: []
               }]);
+              break;
+
+            case 'message_start':
+              // Start a new message within the current round
+              currentMessageRef.current = Date.now();
+              updateDebates(prev => {
+                const lastRound = prev[prev.length - 1];
+                if (!lastRound) return prev;
+
+                return prev.map(round =>
+                  round.id === lastRound.id
+                    ? {
+                        ...round,
+                        messages: [...round.messages, {
+                          id: currentMessageRef.current!,
+                          response: '',
+                          isComplete: false
+                        }]
+                      }
+                    : round
+                );
+              });
               break;
               
             case 'token':
-              if (currentMessageId) {
-                updateMessages(prev => prev.map(msg =>
-                  msg.id === currentMessageId
-                    ? { ...msg, response: msg.response + data.message }
-                    : msg
-                ));
+              // Append token to the current message
+              if (currentMessageRef.current) {
+                updateDebates(prev => {
+                  const lastRound = prev[prev.length - 1];
+                  if (!lastRound) return prev;
+
+                  return prev.map(round =>
+                    round.id === lastRound.id
+                      ? {
+                          ...round,
+                          messages: round.messages.map(msg =>
+                            msg.id === currentMessageRef.current
+                              ? { ...msg, response: msg.response + data.message }
+                              : msg
+                          )
+                        }
+                      : round
+                  );
+                });
               }
               break;
               
             case 'message_complete':
-              if (currentMessageId) {
-                updateMessages(prev => prev.map(msg =>
-                  msg.id === currentMessageId
-                    ? { ...msg, isComplete: true }
-                    : msg
-                ));
-                currentMessageId = null;
+              // Mark the current message as complete
+              if (currentMessageRef.current) {
+                updateDebates(prev => {
+                  const lastRound = prev[prev.length - 1];
+                  if (!lastRound) return prev;
+
+                  return prev.map(round =>
+                    round.id === lastRound.id
+                      ? {
+                          ...round,
+                          messages: round.messages.map(msg =>
+                            msg.id === currentMessageRef.current
+                              ? { ...msg, isComplete: true }
+                              : msg
+                          )
+                        }
+                      : round
+                  );
+                });
+                currentMessageRef.current = null;
               }
               break;
+
+            case 'round_complete':
+              // Mark the current round as complete
+              currentRoundRef.current = null;
+              break;
               
-            case 'batch_complete':
+            case 'debate_complete':
               setCurrentStreamId(null);
               eventSource.close();
               break;
@@ -79,7 +141,8 @@ export function useStreamHandler() {
         }
       };
 
-      eventSource.onerror = () => {
+      eventSource.onerror = (error) => {
+        console.error('EventSource error:', error);
         eventSource.close();
         setCurrentStreamId(null);
       };
