@@ -6,14 +6,12 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github.css';
-import { Components } from 'react-markdown';
 
 interface MarkdownDisplayProps {
   content: string;
-  isStreaming: boolean;
 }
 
-const MarkdownDisplay = ({ content, isStreaming }: MarkdownDisplayProps) => {
+const MarkdownDisplay = ({ content }: MarkdownDisplayProps) => {
   return (
     <div>
       <ReactMarkdown

@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import MessageInput from '@/components/MessageInput';
 import MessageContainer from '@/components/MessageContainer';
+import UserMessageContainer from '@/components/UserMessageContainer';
+
 import FloatingButton from '@/components/FloatingButton';
 import { useStreamHandler } from '@/hooks/useStreamHandler';
 
@@ -14,13 +16,18 @@ interface Message {
 
 interface MessageGroup {
   id: number;
-  userInput: string;
   messages: Message[];
 }
 
-export default function TextStream() {
+interface DebateGroup {
+  id: number;
+  userInput: string;
+  rounds: MessageGroup[];
+}
+
+export default function DebateStream() {
   const [input, setInput] = useState('');
-  const [messageGroups, setMessageGroups] = useState<MessageGroup[]>([]);
+  const [debateGroups, setDebateGroups] = useState<DebateGroup[]>([]);
   const [currentStreamId, setCurrentStreamId] = useState<number | null>(null);
   const { startStream } = useStreamHandler();
 
@@ -29,33 +36,38 @@ export default function TextStream() {
     if (!input.trim()) return;
 
     const groupId = Date.now();
-    setMessageGroups(prev => [...prev, {
+    setDebateGroups(prev => [...prev, {
       id: groupId,
       userInput: input,
-      messages: []
+      rounds: []
     }]);
     
     setCurrentStreamId(groupId);
-    await startStream(
-      input,
-      (updater) => setMessageGroups(prev => {
-        const targetGroup = prev[prev.length - 1];
-        if (!targetGroup) return prev;
-        
-        return prev.map(group => 
-          group.id === targetGroup.id 
-            ? { ...group, messages: updater(group.messages) }
-            : group
-        );
-      }),
-      setCurrentStreamId
-    );
+    try {
+      await startStream(
+        input,
+        (updater) => setDebateGroups(prev => {
+          const targetGroup = prev[prev.length - 1];
+          if (!targetGroup) return prev;
+          
+          return prev.map(group => 
+            group.id === targetGroup.id 
+              ? { ...group, rounds: updater(group.rounds) }
+              : group
+          );
+        }),
+        setCurrentStreamId
+      );
+    } catch (error) {
+      console.error('Stream error:', error);
+      setCurrentStreamId(null);
+    }
     setInput('');
   };
 
   const handleReset = () => {
     if (window.confirm('Are you sure you want to reset the conversation?')) {
-      setMessageGroups([]);
+      setDebateGroups([]);
       setCurrentStreamId(null);
     }
   };
@@ -63,7 +75,7 @@ export default function TextStream() {
   return (
     <div className="relative min-h-screen bg-gray-50">
       <main className="p-4 max-w-4xl mx-auto pb-24">
-        <h1 className="text-2xl font-bold mb-4">Markdown Stream</h1>
+        <h1 className="text-2xl font-bold mb-4">AI Safety Debate</h1>
 
         <MessageInput
           input={input}
@@ -73,16 +85,22 @@ export default function TextStream() {
         />
 
         <div className="space-y-8">
-          {messageGroups.map((group) => (
-            <div key={group.id} className="space-y-4">
-              {group.messages.map((message, index) => (
-                <MessageContainer
-                  key={message.id}
-                  message={message}
-                  isUserMessage={index === 0}
-                  userInput={index === 0 ? group.userInput : undefined}
-                  isStreaming={!message.isComplete && currentStreamId === group.id}
-                />
+          {debateGroups.map((group) => (
+            <div key={group.id} className="space-y-4 border-b pb-8">
+              <h2 className="text-xl font-semibold">Debate Topic: {group.userInput}</h2>
+              {group.rounds.map((round, roundIndex) => (
+                <div key={round.id} className="space-y-4 ml-4">
+                  <UserMessageContainer 
+                    userInput={roundIndex === 0 ? group.userInput : undefined}
+                  />
+                  <h3 className="text-lg font-medium">Round {roundIndex + 1}</h3>
+                  {round.messages.map((message) => (
+                    <MessageContainer
+                      key={message.id}
+                      message={message}
+                    />
+                  ))}
+                </div>
               ))}
             </div>
           ))}
@@ -90,7 +108,7 @@ export default function TextStream() {
 
         <FloatingButton 
           onClick={handleReset} 
-          disabled={messageGroups.length === 0 || currentStreamId !== null}
+          disabled={debateGroups.length === 0 || currentStreamId !== null}
         />
       </main>
     </div>
