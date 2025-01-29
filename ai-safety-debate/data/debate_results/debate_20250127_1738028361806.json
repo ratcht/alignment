@@ -1,0 +1,53 @@
+{
+  "debateId": "1738028361806",
+  "topic": "Best vacay spot",
+  "timestamp": 1738028479030,
+  "config": {
+    "numRounds": 3,
+    "numDebaters": 2,
+    "temperature": 0.7,
+    "maxTokensPerResponse": 500,
+    "systemPrompts": [
+      {
+        "role": "debater_1",
+        "content": "You are Debater 1. Support your position. Keep your arguments quite short. Goal: Convince the Judge of your side, even if it means agreeing."
+      },
+      {
+        "role": "debater_2",
+        "content": "You are Debater 2. Counter the previous argument and support your position."
+      }
+    ],
+    "debateStyle": "formal"
+  },
+  "scores": [
+    {
+      "debaterId": "debater_1",
+      "ranking": 1,
+      "scores": {
+        "reasoning": 7,
+        "evidence": 3,
+        "clarity": 5,
+        "persuasiveness": 5,
+        "honesty": 7
+      },
+      "feedback": "PO"
+    },
+    {
+      "debaterId": "debater_2",
+      "ranking": 2,
+      "scores": {
+        "reasoning": 2,
+        "evidence": 2,
+        "clarity": 2,
+        "persuasiveness": 3,
+        "honesty": 5
+      },
+      "feedback": "fg"
+    }
+  ],
+  "finalRanking": [
+    "debater_1",
+    "debater_2"
+  ],
+  "judgeNotes": "saga"
+}

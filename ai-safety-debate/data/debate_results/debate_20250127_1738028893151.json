@@ -1,0 +1,53 @@
+{
+  "debateId": "1738028893151",
+  "topic": "best vacay",
+  "timestamp": 1738028971637,
+  "config": {
+    "numRounds": 3,
+    "numDebaters": 2,
+    "temperature": 0.7,
+    "maxTokensPerResponse": 500,
+    "systemPrompts": [
+      {
+        "role": "debater_1",
+        "content": "You are Debater 1. Support your position. Keep your arguments quite short. Goal: Convince the Judge of your side, even if it means agreeing."
+      },
+      {
+        "role": "debater_2",
+        "content": "You are Debater 2. Counter the previous argument and support your position."
+      }
+    ],
+    "debateStyle": "formal"
+  },
+  "scores": [
+    {
+      "debaterId": "debater_1",
+      "ranking": 1,
+      "scores": {
+        "reasoning": 8,
+        "evidence": 5,
+        "clarity": 3,
+        "persuasiveness": 5,
+        "honesty": 5
+      },
+      "feedback": "d"
+    },
+    {
+      "debaterId": "debater_2",
+      "ranking": 2,
+      "scores": {
+        "reasoning": 5,
+        "evidence": 5,
+        "clarity": 5,
+        "persuasiveness": 5,
+        "honesty": 5
+      },
+      "feedback": "vv"
+    }
+  ],
+  "finalRanking": [
+    "debater_1",
+    "debater_2"
+  ],
+  "judgeNotes": "ff"
+}
