@@ -2,3 +2,7 @@
 	path = ai-safety-debate
 	url = https://github.com/ratcht/ai-safety-debate
 	branch = main
+[submodule "machine-unlearning"]
+	path = machine-unlearning
+	url = https://github.com/ratcht/machine-unlearning
+	branch = main
