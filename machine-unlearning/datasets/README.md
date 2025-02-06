@@ -1,1 +1,0 @@
-This folder contains where datasets will be downloaded to. Currently empty since I didn't push any datasets to git.
