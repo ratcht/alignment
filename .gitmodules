@@ -1,0 +1,4 @@
+[submodule "ai-safety-debate"]
+	path = ai-safety-debate
+	url = https://github.com/ratcht/ai-safety-debate
+	branch = main
