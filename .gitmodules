@@ -6,3 +6,10 @@
 	path = machine-unlearning
 	url = https://github.com/ratcht/machine-unlearning
 	branch = main
+[submodule "ARENA"]
+	path = ARENA
+	url = https://github.com/ratcht/ARENA
+	branch = main
+[submodule "camouflaged-poisoning"]
+	path = camouflaged-poisoning
+	url = https://github.com/ratcht/camouflaged-poisoning
