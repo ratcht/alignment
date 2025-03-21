@@ -10,7 +10,7 @@ This repository contains my research and implementations exploring various aspec
 2. [Machine Unlearning](#2-machine-unlearning) — forgetting specific data
 3. [Camouflaged Data Poisoning](#3-camouflaged-data-poisoning) — subtle model sabotage
 4. [ARENA3.0](#4-arena30) — crash course to alignment engineering
-5. [Misalignment Scenarios](#5-misalignment-scenarios) — attacking & patching LLMs
+5. [Misalignment](#5-misalignment) — attacking & patching LLMs
 
 ---
 
@@ -98,7 +98,7 @@ This repository contains my research and implementations exploring various aspec
 
 ---
 
-### 5. Misalignment Scenarios
+### 5. Misalignment
 - **Description:**  
   This project explores adversarial attacks and defenses on LLMs. I try to come up with new designs, approaches, and implement papers.
 
