@@ -4,6 +4,16 @@ This repository contains my research and implementations exploring various aspec
 
 ---
 
+## Index
+
+1. [AI Safety Debate](#1-ai-safety-debate) — AI agents debating truth
+2. [Machine Unlearning](#2-machine-unlearning) — forgetting specific data
+3. [Camouflaged Data Poisoning](#3-camouflaged-data-poisoning) — subtle model sabotage
+4. [ARENA3.0](#4-arena30) — crash course to alignment engineering
+5. [Misalignment Scenarios](#5-misalignment-scenarios) — attacking & patching LLMs
+
+---
+
 ## Contents
 
 ### 1. AI Safety Debate
