@@ -13,3 +13,6 @@
 [submodule "camouflaged-poisoning"]
 	path = camouflaged-poisoning
 	url = https://github.com/ratcht/camouflaged-poisoning
+[submodule "misalignment"]
+	path = misalignment
+	url = https://github.com/ratcht/misalignment
